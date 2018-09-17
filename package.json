@@ -1,0 +1,16 @@
+{
+  "name": "parse-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run parse-server",
+    "parse-server": "parse-server --appId PARSE_DEMO --masterKey MASTER_KEY --databaseURI mongodb://localhost/parse-demo"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "parse-server": "^3.0.0"
+  }
+}
