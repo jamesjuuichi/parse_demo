@@ -6,4 +6,10 @@ module.exports = {
   databaseURI: process.env.DB_URI,
   port: process.env.PARSE_SERVER_PORT,
   mountPath: process.env.PARSE_END_POINT,
+  auth: {
+    myauth: {
+      module: require('./MyAuth'),
+      option1: 'id'
+    },
+  },
 }
