@@ -6,16 +6,24 @@ import {
   getCurrentUser as getCurrentUserAPI,
   logOut as logOutAPI,
 } from '@/api/auth'
+import { getItems, createItem } from '@/api/Item'
 
 Vue.use(Vuex)
 
 const state = {
   user: null,
+  items: [],
 }
 
 const mutations = {
   SET_USER(state, user) {
     state.user = user
+  },
+  SET_ITEMS(state, items) {
+    state.items = items
+  },
+  APPEND_ITEM(state, item) {
+    state.items.push(item)
   },
 }
 
@@ -42,8 +50,15 @@ const actions = {
     const isLoggedOut = await logOutAPI()
     if (isLoggedOut === true) {
       commit('SET_USER', null)
+      commit('SET_ITEMS', [])
     }
   },
+  async fetchItems({ commit }) {
+    commit('SET_ITEMS', await getItems(0, 1000))
+  },
+  async createItem({ commit }, { name, price, isPrivate, category }) {
+    commit('APPEND_ITEM', await createItem(name, price, isPrivate, category))
+  }
 }
 
 const getters = {
