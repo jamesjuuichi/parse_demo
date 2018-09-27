@@ -6,13 +6,15 @@ import {
   getCurrentUser as getCurrentUserAPI,
   logOut as logOutAPI,
 } from '@/api/auth'
-import { getItems, createItem } from '@/api/Item'
+import { getItems, createItem as createItemAPI } from '@/api/Item'
+import { search as searchAPI } from '@/api/search'
 
 Vue.use(Vuex)
 
 const state = {
   user: null,
   items: [],
+  searchResult: [],
 }
 
 const mutations = {
@@ -25,6 +27,9 @@ const mutations = {
   APPEND_ITEM(state, item) {
     state.items.push(item)
   },
+  SET_SEARCH_RESULT(state, items) {
+    state.searchResult = items
+  }
 }
 
 const actions = {
@@ -57,7 +62,10 @@ const actions = {
     commit('SET_ITEMS', await getItems(0, 1000))
   },
   async createItem({ commit }, { name, price, isPrivate, category }) {
-    commit('APPEND_ITEM', await createItem(name, price, isPrivate, category))
+    commit('APPEND_ITEM', await createItemAPI(name, price, isPrivate, category))
+  },
+  async search({ commit }, term) {
+    commit('SET_SEARCH_RESULT', await searchAPI(term))
   }
 }
 

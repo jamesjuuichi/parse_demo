@@ -1,13 +1,14 @@
 <template lang="pug">
 #home
   small-container
+    input.search-bar(placeholder="Search" @input="onSearch")
     .list-header
       .col
       .col
       .col
       .col.text-center(v-if="showPrivate") Private
-    .list
-      .item(v-for="item in items")
+    .list(:class="isSearching ? 'is-searching' : ''")
+      .item(v-for="item in items" :class="isSearching && isSearchResult(item) ? 'is-search-result' : ''")
         .col {{ item.get('name') }}
         .col {{ item.get('price') }}
         .col {{ categoryName(item) }}
@@ -30,6 +31,7 @@
 
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex'
+import debounce from 'debounce'
 import toggles from '@/constants/toggles'
 import SmallContainer from '@/components/SmallContainer'
 
@@ -42,20 +44,24 @@ export default {
       formName: '',
       formPrice: '',
       formIsPrivate: false,
+      searchTerm: '',
     }
   },
   components: {
     SmallContainer,
   },
   computed: {
-    ...mapState(['items']),
+    ...mapState(['items', 'searchResult']),
     ...mapGetters(['isLoggedIn']),
     showPrivate() {
       return toggles.SHOW_PRIVATE && this.isLoggedIn
     },
+    isSearching() {
+      return this.searchTerm.length > 0
+    },
   },
   methods: {
-    ...mapActions(['fetchItems', 'createItem']),
+    ...mapActions(['fetchItems', 'createItem', 'search']),
     categoryName(item) {
       return item.get('category') ? item.get('category').get('name') : ''
     },
@@ -77,12 +83,20 @@ export default {
         isPrivate: this.formIsPrivate,
       })
       this.clearForm()
-    }
+    },
+    isSearchResult(item) {
+      return this.searchResult.indexOf(item.id) > -1
+    },
+    onSearch: debounce(function(e) {
+      this.searchTerm = e.target.value
+      this.search(this.searchTerm)
+    }, 500),
   },
 }
 </script>
 <style lang="stylus" scoped>
 @require '~@/assets/functions'
+@require '~@/assets/colors'
 
 #home
   display flex
@@ -113,4 +127,19 @@ form
 .submit-button
   width to-rem(240px)
   margin 0
+.search-bar
+  width 100%
+  border 0
+  border-bottom 1px solid disabled-color
+  outline-width 0
+  margin-bottom 1rem
+  padding 0.25rem 0
+  &:focus
+    border-bottom 1px solid border-color
+.list.is-searching
+  .item
+    color disabled-color
+    &.is-search-result
+      color black
+
 </style>
